@@ -1,17 +1,35 @@
-name: Search Load Test
-on:
-  schedule:
-    - cron: '*/15 * * * *'  # Runs every 15 minutes
-  workflow_dispatch:        # Allows manual run
+// START WITH THIS - search-test.js
+import http from 'k6/http';
+import { sleep } from 'k6';
 
-jobs:
-  load-test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Run Load Test
-      uses: grafana/k6-action@v0.3.0
-      with:
-        filename: search-test.js
+export const options = {
+  scenarios: {
+    safe_load: {
+      executor: 'constant-vus',
+      vus: 50,  // Only 50 users to start
+      duration: '1m',
+    },
+  },
+};
+
+const searchWords = ['p80', 'glock', 'frame'];
+
+export default function () {
+  const baseUrl = 'https://polymer80.us.com';
+  const word = searchWords[__VU % searchWords.length];
+  const searchTerm = word.substring(0, 1); // Just first letter
+  
+  const headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'X-Requested-With': 'XMLHttpRequest',
+    'Referer': `${baseUrl}/ds/autocomps`,
+  };
+  
+  http.post(
+    `${baseUrl}/wp-admin/admin-ajax.php`,
+    `action=flatsome_ajax_search_products&query=${searchTerm}`,
+    { headers: headers }
+  );
+  
+  sleep(2); // 2 seconds between requests - slower
+}
