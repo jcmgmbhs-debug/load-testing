@@ -1,13 +1,13 @@
 name: Continuous Search Load Test
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Every 15 minutes, 24/7
+    - cron: '*/15 * * * *'  # Every 15 minutes
   workflow_dispatch:        # Manual trigger
 
 jobs:
   load-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 5      # Auto-stop if stuck
+    timeout-minutes: 5
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
