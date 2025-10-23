@@ -5,7 +5,7 @@ export const options = {
   scenarios: {
     constant_typing: {
       executor: 'constant-vus',
-      vus: 50,  // Start with 50 users
+      vus: 50000,  // Start with 50 users
       duration: '1m',  // 1 minute test
     },
   },
@@ -62,3 +62,4 @@ export default function () {
   
   sleep(1); // 1 second between keystrokes
 }
+
